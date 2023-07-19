@@ -1,4 +1,4 @@
-# Transformers are Sample-Efficient World Models (IRIS)
+# IRIS Agent
 
 Minimal repo to use the policy of any [IRIS](https://github.com/eloialonso/iris) agent trained on the 26 Atari 100k games.  
 
