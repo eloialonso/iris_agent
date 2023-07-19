@@ -24,8 +24,9 @@ Create agent:
 ```python
 from iris_agent import Agent
 
-agent = Agent('Breakout') # specify game name, or  
-agent = Agent()           # choose from list of games
+agent = Agent()              # choose from list of games, or
+# agent = Agent('Breakout')  # specify game name
+
 
 ```
 
