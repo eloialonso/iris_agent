@@ -20,7 +20,7 @@ class TokenizerEncoderOutput:
 
 
 class Tokenizer(nn.Module):
-    def __init__(self, vocab_size: int, embed_dim: int, encoder: Encoder, decoder: Decoder, with_lpips: bool = True) -> None:
+    def __init__(self, vocab_size: int, embed_dim: int, encoder: Encoder, decoder: Decoder) -> None:
         super().__init__()
         self.vocab_size = vocab_size
         self.encoder = encoder

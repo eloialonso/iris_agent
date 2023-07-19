@@ -6,14 +6,15 @@ import requests
 from typing import Optional
 from urllib.request import urlretrieve
 
-from hydra.utils import instantiate
-from omegaconf import OmegaConf
 import torch
 from torch.distributions.categorical import Categorical
 import torch.nn as nn
 
-from models.actor_critic import ActorCritic
-from models.tokenizer import Tokenizer
+from .models.actor_critic import ActorCritic
+from .models.tokenizer import Encoder, Decoder, EncoderDecoderConfig, Tokenizer
+
+
+ROOTDIR = Path(__file__).parent
 
 
 class Agent(nn.Module):
@@ -23,10 +24,10 @@ class Agent(nn.Module):
         sd = _load_ckpt(name)
         sda = _extract_state_dict(sd, 'actor_critic')
         sdt = _extract_state_dict(sd, 'tokenizer')
-        cfg = OmegaConf.load('default.yaml')
-        cfg.actor_critic.act_vocab_size = sda['actor_linear.weight'].size(0)
-        self.tokenizer = Tokenizer(**instantiate(cfg.tokenizer))
-        self.actor_critic = ActorCritic(**cfg.actor_critic)
+        enc_dec_cfg = EncoderDecoderConfig(resolution=64, in_channels=3, z_channels=512, ch=64, ch_mult=(1, 1, 1, 1, 1),
+                                           num_res_blocks=2, attn_resolutions=(8, 16), out_ch=3, dropout=0.0)
+        self.tokenizer = Tokenizer(vocab_size=512, embed_dim=512, encoder=Encoder(enc_dec_cfg), decoder=Decoder(enc_dec_cfg))
+        self.actor_critic = ActorCritic(use_original_obs=False, act_vocab_size=sda['actor_linear.weight'].size(0))
         self.tokenizer.load_state_dict(sdt, strict=False)
         self.actor_critic.load_state_dict(sda)
 
@@ -73,14 +74,14 @@ def _load_ckpt(name):
     """Get checkpoint from cache or from git lfs server."""
     assert name in GAMES
     url = _get_url_lfs(name)
-    cache_dir = Path('checkpoints')
+    cache_dir = Path(f'{ROOTDIR}/checkpoints').absolute()
     cache_dir.mkdir(exist_ok=True, parents=False)
     ckpt_path = cache_dir / f'{name}.pt'
     if ckpt_path.is_file():
         print(f'{name} checkpoint already downloaded at {ckpt_path}')
     else:
         print(f'Downloading {name} checkpoint from https://github.com/eloialonso/iris_pretrained_models')
-        urlretrieve(url, str(ckpt_path.absolute()))
+        urlretrieve(url, str(ckpt_path))
         print(f'Downloaded {name} checkpoint at {ckpt_path}')
     return torch.load(ckpt_path, map_location='cpu')
 
