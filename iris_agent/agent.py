@@ -34,6 +34,9 @@ class Agent(nn.Module):
     @property
     def device(self):
         return self.actor_critic.conv1.weight.device
+    
+    def reset(self, n: int) -> None:
+        self.actor_critic.reset(n) # Reset lstm hidden state
 
     def act(self, obs: torch.FloatTensor, should_sample: bool = True, temperature: float = 1.0) -> torch.LongTensor:
         input_ac = obs if self.actor_critic.use_original_obs else torch.clamp(self.tokenizer.encode_decode(obs, should_preprocess=True, should_postprocess=True), 0, 1)
