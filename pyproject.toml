@@ -1,0 +1,10 @@
+[project]
+name = "iris-agent"
+version = "0.1.0"
+description = "Ninimal code to run a pretrained IRIS agent."
+license = "MIT"
+authors = [
+    "Eloi Alonso <eloi.alonso.7.4@gmail.com>",
+]
+readme = "README.md"
+repository = "https://github.com/eloialonso/iris_agent"
