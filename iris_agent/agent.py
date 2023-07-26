@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 import requests
 from typing import Optional
-from urllib.request import urlretrieve
 
 import torch
 from torch.distributions.categorical import Categorical
@@ -84,7 +83,10 @@ def _load_ckpt(name):
         print(f'{name} checkpoint already downloaded at {ckpt_path}')
     else:
         print(f'Downloading {name} checkpoint from https://github.com/eloialonso/iris_pretrained_models')
-        urlretrieve(url, str(ckpt_path))
+        r = requests.get(url, allow_redirects=True)
+        if r.status_code != 200: 
+            raise ConnectionError('could not download {}\nerror code: {}'.format(url, r.status_code))
+        ckpt_path.write_bytes(r.content)
         print(f'Downloaded {name} checkpoint at {ckpt_path}')
     return torch.load(ckpt_path, map_location='cpu')
 
