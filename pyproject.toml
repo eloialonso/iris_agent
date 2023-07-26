@@ -6,6 +6,11 @@ authors = [
     {name="Eloi Alonso", email="eloi.alonso.7.4@gmail.com"},
 ]
 readme = "README.md"
+dependencies = [
+    "einops",
+    "requests",
+    "torch",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/eloialonso/iris_agent"

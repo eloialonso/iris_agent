@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import Optional
 
 from einops import rearrange
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -60,10 +59,6 @@ class ActorCritic(nn.Module):
                 if mask_padding[:, i].any():
                     with torch.no_grad():
                         self(burnin_observations[:, i], mask_padding[:, i])
-
-    def prune(self, mask: np.ndarray) -> None:
-        self.hx = self.hx[mask]
-        self.cx = self.cx[mask]
 
     def forward(self, inputs: torch.FloatTensor, mask_padding: Optional[torch.BoolTensor] = None) -> ActorCriticOutput:
         assert inputs.ndim == 4 and inputs.shape[1:] == (3, 64, 64)
