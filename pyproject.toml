@@ -1,7 +1,7 @@
 [project]
 name = "iris-agent"
 version = "0.1.0"
-description = "Ninimal code to run a pretrained IRIS agent."
+description = "Minimal code to run a pretrained IRIS agent."
 authors = [
     {name="Eloi Alonso", email="eloi.alonso.7.4@gmail.com"},
 ]
