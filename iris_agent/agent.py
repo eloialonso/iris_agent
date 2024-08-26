@@ -13,6 +13,7 @@ from .models.actor_critic import ActorCritic
 from .models.tokenizer import Encoder, Decoder, EncoderDecoderConfig, Tokenizer
 
 
+HF_REPO = "https://huggingface.co/eloialonso/iris"
 ROOTDIR = Path(__file__).parent
 
 
@@ -56,33 +57,22 @@ def _extract_state_dict(state_dict, module_name):
     return OrderedDict({k.split(".", 1)[1]: v for k, v in state_dict.items() if k.startswith(module_name)})
 
 
-def _get_url_lfs(name):
-    first_url = f"https://api.github.com/repos/eloialonso/iris_pretrained_models/contents/pretrained_models/{name}.pt"
-    r = requests.get(first_url)
-    assert r.status_code == 200
-    x = base64.b64decode(json.loads(r.content)["content"]).decode()
-    sha = x.split("sha256:")[1].split("\n")[0]
-    size = int(x.split("size ")[1].split("\n")[0])
-    post_url = "https://github.com/eloialonso/iris_pretrained_models.git/info/lfs/objects/batch"
-    post_json = json.dumps({"operation": "download", "transfers": ["basic"], "objects": [{"oid": sha, "size": size}]})
-    post_headers = {"Accept": "application/vnd.git-lfs+json", "Content-type": "application/json"} 
-    r = requests.post(post_url, post_json, headers=post_headers)
-    assert r.status_code == 200
-    download_url = dict(json.loads(r.content.decode()))["objects"][0]["actions"]["download"]["href"]
-    return download_url
+def _get_url_hf(name):
+    url = f"{HF_REPO}/resolve/main/pretrained_models/{name}.pt"
+    return url
 
 
 def _load_ckpt(name):
-    """Get checkpoint from cache or from git lfs server."""
+    """Get checkpoint from cache or from hugging face server."""
     assert name in GAMES
-    url = _get_url_lfs(name)
+    url = _get_url_hf(name)
     cache_dir = Path(f"{ROOTDIR}/checkpoints").absolute()
     cache_dir.mkdir(exist_ok=True, parents=False)
     ckpt_path = cache_dir / f"{name}.pt"
     if ckpt_path.is_file():
         print(f"{name} checkpoint already downloaded at {ckpt_path}")
     else:
-        print(f"Downloading {name} checkpoint from https://github.com/eloialonso/iris_pretrained_models")
+        print(f"Downloading {name} checkpoint from {HF_REPO}")
         r = requests.get(url, allow_redirects=True)
         if r.status_code != 200: 
             raise ConnectionError("could not download {}\nerror code: {}".format(url, r.status_code))
