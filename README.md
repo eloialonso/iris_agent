@@ -6,7 +6,7 @@ Minimal repo to use the policy of any [IRIS](https://github.com/eloialonso/iris)
 
 - [Paper](https://openreview.net/forum?id=vhFu1Acb0xb)
 - [Codebase](https://github.com/eloialonso/iris)
-- [Pretrained models](https://github.com/eloialonso/iris_pretrained_models)
+- [Pretrained models](https://huggingface.co/eloialonso/iris/tree/main/pretrained_models)
 
 
 ## Setup
